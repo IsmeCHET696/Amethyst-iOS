@@ -79,6 +79,14 @@ jobs:
           git commit -am "CI: Update gl4es"
           git push
 
+      - name: Install GNU make (gmake)
+        run: |
+          brew install make
+          brew install ldid || true
+          export PATH=/opt/homebrew/bin:$PATH
+          which gmake
+          gmake --version | head -1
+
       - name: Build for ${{ matrix.platform_name }}
         run: |
           export PATH=/opt/homebrew/bin:$PATH
