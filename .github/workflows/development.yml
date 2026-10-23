@@ -19,7 +19,7 @@ jobs:
           - platform: 2
             platform_name: ios
     
-    runs-on: macos-14
+    runs-on: J316sAP
     steps:
       - name: Remove work folders
         run: |
@@ -78,27 +78,9 @@ jobs:
           git add Natives/resources/Frameworks/libgl4es_114.dylib
           git commit -am "CI: Update gl4es"
           git push
-
-      - name: Set up JDK 8
-        id: jdk8
-        uses: actions/setup-java@v4
-        with:
-          distribution: zulu
-          java-version: '8'
-
-      - name: Install GNU make (gmake)
-        run: |
-          brew install make
-          brew install ldid || true
-          export PATH=/opt/homebrew/bin:$PATH
-          which gmake
-          gmake --version | head -1
-
       - name: Build for ${{ matrix.platform_name }}
         run: |
           export PATH=/opt/homebrew/bin:$PATH
-          export BOOTJDK="${{ steps.jdk8.outputs.path }}/bin"
-          "$BOOTJDK/javac" -version
           export SLIMMED=1
           if [ "${{ matrix.platform_name }}" == "ios" ]; then
             # Build ipa and tipa for iOS
@@ -111,7 +93,6 @@ jobs:
             # Build ipa only for everything else
             gmake -j$(sysctl -n hw.ncpu) dsym package PLATFORM=${{ matrix.platform }}
           fi
-
       - name: Upload regular ipa
         uses: actions/upload-artifact@main
         with:
@@ -141,3 +122,4 @@ jobs:
         if: matrix.platform_name == 'ios'
         with:
           name: AngelAuraAmethyst.dSYM
+          path: artifacts/AngelAuraAmethyst.dSYM
